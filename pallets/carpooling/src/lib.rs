@@ -34,10 +34,15 @@ pub mod pallet {
 	// The pallet's runtime storage items.
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage
 	#[pallet::storage]
-	#[pallet::getter(fn something)]
+	#[pallet::getter(fn get_customer)]
+	pub type Customer<T: Config> = StorageMap<_, Blake2_128Concat, u32, T::AccountId>;
+	#[pallet::storage]
+    #[pallet::getter(fn get_driver)]
+    pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, u32, T::AccountId>;
+
 	// Learn more about declaring storage items:
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
-	pub type Something<T> = StorageValue<_, u32>;
+	//pub type Something<T> = StorageValue<_, u32>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://substrate.dev/docs/en/knowledgebase/runtime/events
@@ -74,7 +79,7 @@ pub mod pallet {
 			let who = ensure_signed(origin)?;
 
 			// Update storage.
-			<Something<T>>::put(something);
+			//<Something<T>>::put(something);
 
 			// Emit an event.
 			Self::deposit_event(Event::SomethingStored(something, who));
@@ -82,7 +87,7 @@ pub mod pallet {
 			Ok(())
 		}
 
-		/// An example dispatchable that may throw a custom error.
+		/*/// An example dispatchable that may throw a custom error.
 		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
 		pub fn cause_error(origin: OriginFor<T>) -> DispatchResult {
 			let _who = ensure_signed(origin)?;
@@ -99,6 +104,6 @@ pub mod pallet {
 					Ok(())
 				},
 			}
-		}
+		}*/
 	}
 }
