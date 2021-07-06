@@ -20,6 +20,21 @@ pub mod pallet {
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
 	use frame_system::pallet_prelude::*;
 
+	type CustomerOf<T> = s_Customer<<T as frame_system::Config>::Hash>;
+    #[derive(Encode, Decode, Clone, Default, PartialEq, RuntimeDebug)]
+    pub struct s_Customer<Hash> {
+        pub id: u32,
+        pub name: Hash,
+        pub location: Hash,
+    }
+
+	type DriverOf<T> = s_Driver<<T as frame_system::Config>::Hash>;
+    #[derive(Encode, Decode, Clone, Default, PartialEq, RuntimeDebug)]
+    pub struct s_Driver<Hash> {
+        pub id: u32,
+        pub Car_no: Hash,
+        pub location: Hash,
+    }
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -35,10 +50,10 @@ pub mod pallet {
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage
 	#[pallet::storage]
 	#[pallet::getter(fn get_customer)]
-	pub type Customer<T: Config> = StorageMap<_, Blake2_128Concat, u32, T::AccountId>;
+    pub type Customer<T: Config> = StorageMap<_, Blake2_128Concat, u32, CustomerOf<T>>;
 	#[pallet::storage]
     #[pallet::getter(fn get_driver)]
-    pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, u32, T::AccountId>;
+    pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, u32, DriverOf<T>>;
 
 	// Learn more about declaring storage items:
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
