@@ -32,7 +32,7 @@ pub mod pallet {
     #[derive(Encode, Decode, Clone, Default, PartialEq, RuntimeDebug)]
     pub struct SDriver<Hash> {
         pub id: u32,
-        pub Car_no: Hash,
+        pub car_no: Hash,
         pub location: Hash,
 		pub price: u32,
     }
@@ -55,7 +55,9 @@ pub mod pallet {
 	#[pallet::storage]
     #[pallet::getter(fn get_driver)]
     pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, DriverOf<T>>;
-
+	#[pallet::storage]
+    #[pallet::getter(fn get_booking)]
+    pub type Booking<T: Config> = StorageMap<_, Blake2_128Concat, CustomerOf<T>, DriverOf<T>>;
 	// Learn more about declaring storage items:
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
 	//pub type Something<T> = StorageValue<_, u32>;
