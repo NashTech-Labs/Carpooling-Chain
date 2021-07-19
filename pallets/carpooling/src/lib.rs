@@ -19,17 +19,19 @@ mod benchmarking;
 pub mod pallet {
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
 	use frame_system::{Account, pallet_prelude::*};
-
+	// CustomerOf is datatype used for storage in Customer
 	type CustomerOf<T> = SCustomer<<T as frame_system::Config>::Hash>;
+	// SCustomer is a struct for Customer
     #[derive(Encode, Decode, Clone, Default, PartialEq, RuntimeDebug)]
     pub struct SCustomer<Hash> {
         pub id: u32,
         pub name: Hash,
         pub location: Hash,
     }
-
+	// DriverOf is datatype used for storage in Driver
 	type DriverOf<T> = SDriver<<T as frame_system::Config>::Hash>;
-    #[derive(Encode, Decode, Clone, Default, PartialEq, RuntimeDebug)]
+    //SDriver is a struct for Driver
+	#[derive(Encode, Decode, Clone, Default, PartialEq, RuntimeDebug)]
     pub struct SDriver<Hash> {
         pub id: u32,
         pub car_no: Hash,
@@ -94,9 +96,6 @@ pub mod pallet {
 			// This function will return an error if the extrinsic is not signed.
 			// https://substrate.dev/docs/en/knowledgebase/runtime/origin
 			let who = ensure_signed(origin)?;
-
-			// Update storage.
-			//<Something<T>>::put(something);
 
 			// Emit an event.
 			Self::deposit_event(Event::SomethingStored(something, who));
