@@ -18,8 +18,26 @@ mod benchmarking;
 #[frame_support::pallet]
 pub mod pallet {
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
-	use frame_system::pallet_prelude::*;
-
+	use frame_system::{Account, pallet_prelude::*};
+	// CustomerOf is datatype used for storage in Customer
+	type CustomerOf<T> = SCustomer<<T as frame_system::Config>::Hash>;
+	// SCustomer is a struct for Customer
+    #[derive(Encode, Decode, Clone, Default, PartialEq, RuntimeDebug)]
+    pub struct SCustomer<Hash> {
+        pub id: u32,
+        pub name: Hash,
+        pub location: Hash,
+    }
+	// DriverOf is datatype used for storage in Driver
+	type DriverOf<T> = SDriver<<T as frame_system::Config>::Hash>;
+    //SDriver is a struct for Driver
+	#[derive(Encode, Decode, Clone, Default, PartialEq, RuntimeDebug)]
+    pub struct SDriver<Hash> {
+        pub id: u32,
+        pub car_no: Hash,
+        pub location: Hash,
+		pub price: u32,
+    }
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -34,10 +52,16 @@ pub mod pallet {
 	// The pallet's runtime storage items.
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage
 	#[pallet::storage]
-	#[pallet::getter(fn something)]
+	#[pallet::getter(fn get_customer)]
+    pub type Customer<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, CustomerOf<T>>;
+	#[pallet::storage]
+    #[pallet::getter(fn get_driver)]
+    pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, DriverOf<T>>;
+	#[pallet::storage]
+    #[pallet::getter(fn get_booking)]
+    pub type Booking<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, T::AccountId>;
 	// Learn more about declaring storage items:
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
-	pub type Something<T> = StorageValue<_, u32>;
 
 	// Pallets use events to inform users when important changes are made.
 	// https://substrate.dev/docs/en/knowledgebase/runtime/events
@@ -73,32 +97,10 @@ pub mod pallet {
 			// https://substrate.dev/docs/en/knowledgebase/runtime/origin
 			let who = ensure_signed(origin)?;
 
-			// Update storage.
-			<Something<T>>::put(something);
-
 			// Emit an event.
 			Self::deposit_event(Event::SomethingStored(something, who));
 			// Return a successful DispatchResultWithPostInfo
 			Ok(())
-		}
-
-		/// An example dispatchable that may throw a custom error.
-		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1,1))]
-		pub fn cause_error(origin: OriginFor<T>) -> DispatchResult {
-			let _who = ensure_signed(origin)?;
-
-			// Read a value from storage.
-			match <Something<T>>::get() {
-				// Return an error if the value has not been set.
-				None => Err(Error::<T>::NoneValue)?,
-				Some(old) => {
-					// Increment the value read from storage; will error in the event of overflow.
-					let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-					// Update the value in storage with the incremented result.
-					<Something<T>>::put(new);
-					Ok(())
-				},
-			}
 		}
 	}
 }
