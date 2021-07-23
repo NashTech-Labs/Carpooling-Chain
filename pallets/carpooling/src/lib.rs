@@ -18,7 +18,7 @@ mod benchmarking;
 #[frame_support::pallet]
 pub mod pallet {
 	use frame_support::{dispatch::DispatchResult, pallet_prelude::*};
-	use frame_system::{Account, pallet_prelude::*};
+	use frame_system::pallet_prelude::*;
 	// CustomerOf is datatype used for storage in Customer
 	type CustomerOf<T> = SCustomer<<T as frame_system::Config>::Hash>;
 	// SCustomer is a struct for Customer
@@ -53,13 +53,13 @@ pub mod pallet {
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage
 	#[pallet::storage]
 	#[pallet::getter(fn get_customer)]
-    pub type Customer<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, CustomerOf<T>>;
+    pub type Customer<T: Config> = StorageMap<_, Blake2_128Concat, u32, CustomerOf<T>>;
 	#[pallet::storage]
     #[pallet::getter(fn get_driver)]
-    pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, DriverOf<T>>;
+    pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, u32, DriverOf<T>>;
 	#[pallet::storage]
     #[pallet::getter(fn get_booking)]
-    pub type Booking<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, T::AccountId>;
+    pub type Booking<T: Config> = StorageMap<_, Blake2_128Concat, u32, T::AccountId>;
 	// Learn more about declaring storage items:
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
 
@@ -71,14 +71,14 @@ pub mod pallet {
 	pub enum Event<T: Config> {
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters. [something, who]
-		SomethingStored(u32, T::AccountId),
+		CustomerAdded(u32, T::AccountId),
 	}
 
 	// Errors inform users that something went wrong.
 	#[pallet::error]
 	pub enum Error<T> {
 		/// Error names should be descriptive.
-		NoneValue,
+		CustomerAlreadyExist,
 		/// Errors should have helpful documentation associated with them.
 		StorageOverflow,
 	}
@@ -91,14 +91,19 @@ pub mod pallet {
 		/// An example dispatchable that takes a singles value as a parameter, writes the value to
 		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResult {
-			// Check that the extrinsic was signed and get the signer.
-			// This function will return an error if the extrinsic is not signed.
-			// https://substrate.dev/docs/en/knowledgebase/runtime/origin
+		pub fn add_new_customer(origin: OriginFor<T>, cust_id: u32, new_cust:CustomerOf<T>) -> DispatchResult {
+			
 			let who = ensure_signed(origin)?;
 
+			match <Customer<T>>::get(cust_id) {
+				Some(_) => Err(Error::<T>::CustomerAlreadyExist)?,
+				None => {
+					<Customer<T>>::insert(cust_id, new_cust);
+				}
+			}
+
 			// Emit an event.
-			Self::deposit_event(Event::SomethingStored(something, who));
+			Self::deposit_event(Event::CustomerAdded(cust_id,who));
 			// Return a successful DispatchResultWithPostInfo
 			Ok(())
 		}
