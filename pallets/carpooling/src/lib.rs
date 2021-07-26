@@ -35,7 +35,7 @@ pub mod pallet {
     pub struct SDriver<Hash> {
         pub id: u32,
         pub car_no: Hash,
-        pub location: Hash,
+        pub location: (u32, u32),
 		pub price: u32,
     }
 	/// Configure the pallet by specifying the parameters and types on which it depends.
@@ -56,7 +56,7 @@ pub mod pallet {
     pub type Customer<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, CustomerOf<T>>;
 	#[pallet::storage]
     #[pallet::getter(fn get_driver)]
-    pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, DriverOf<T>>;
+    pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, u32, DriverOf<T>>;
 	#[pallet::storage]
     #[pallet::getter(fn get_booking)]
     pub type Booking<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, T::AccountId>;
@@ -71,14 +71,14 @@ pub mod pallet {
 	pub enum Event<T: Config> {
 		/// Event documentation should end with an array that provides descriptive names for event
 		/// parameters. [something, who]
-		SomethingStored(u32, T::AccountId),
+		CabAdded(u32, T::AccountId),
 	}
 
 	// Errors inform users that something went wrong.
 	#[pallet::error]
 	pub enum Error<T> {
 		/// Error names should be descriptive.
-		NoneValue,
+		CabAlreadyExist,
 		/// Errors should have helpful documentation associated with them.
 		StorageOverflow,
 	}
@@ -91,14 +91,23 @@ pub mod pallet {
 		/// An example dispatchable that takes a singles value as a parameter, writes the value to
 		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
 		#[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
-		pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResult {
+		pub fn add_new_cab(
+			origin: OriginFor<T>,
+            cab_id: u32,
+            new_cab: DriverOf<T>,) -> DispatchResult {
 			// Check that the extrinsic was signed and get the signer.
 			// This function will return an error if the extrinsic is not signed.
 			// https://substrate.dev/docs/en/knowledgebase/runtime/origin
 			let who = ensure_signed(origin)?;
+			match <Driver<T>>::get(cab_id) {
+                Some(_) => Err(Error::<T>::CabAlreadyExist)?,
+                None => {
+                    <Driver<T>>::insert(cab_id, new_cab);
+                }
+            }
 
 			// Emit an event.
-			Self::deposit_event(Event::SomethingStored(something, who));
+			Self::deposit_event(Event::CabAdded(cab_id, who));
 			// Return a successful DispatchResultWithPostInfo
 			Ok(())
 		}
