@@ -25,7 +25,7 @@ pub mod pallet {
     pub struct SCustomer<Hash> {
         pub id: u32,
         pub name: Hash,
-        pub location: Hash,
+        pub location: (u32, u32),
     }
     // DriverOf is datatype used for storage in Driver
     type DriverOf<T> = SDriver<<T as frame_system::Config>::Hash>;
@@ -34,7 +34,7 @@ pub mod pallet {
     pub struct SDriver<Hash> {
         pub id: u32,
         pub car_no: Hash,
-        pub location: Hash,
+        pub location: (u32, u32),
         pub price: u32,
     }
     /// Configure the pallet by specifying the parameters and types on which it depends.
@@ -58,7 +58,7 @@ pub mod pallet {
     pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, u32, DriverOf<T>>;
     #[pallet::storage]
     #[pallet::getter(fn get_booking)]
-    pub type Booking<T: Config> = StorageMap<_, Blake2_128Concat, u32, T::AccountId>;
+    pub type Booking<T: Config> = StorageMap<_, Blake2_128Concat, u32, u32>;
     // Learn more about declaring storage items:
     // https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
 
@@ -76,10 +76,8 @@ pub mod pallet {
     // Errors inform users that something went wrong.
     #[pallet::error]
     pub enum Error<T> {
-        /// Error names should be descriptive.
+        /// Error if customer is already exist.
         CustomerAlreadyExist,
-        /// Errors should have helpful documentation associated with them.
-        StorageOverflow,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.

@@ -10,11 +10,11 @@ fn add_new_customer() {
         let new_cust = SCustomer {
             id: 32,
             name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
-            location: "New Delhi".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (40, 34),
         };
         // Dispatch a signed extrinsic.
         assert_eq!(
-            TemplateModule::add_new_customer(Origin::signed(1), 42, new_cust),
+            Carpooling::add_new_customer(Origin::signed(1), 42, new_cust),
             Ok(())
         );
         // Read pallet storage and assert an expected result.
@@ -27,10 +27,10 @@ fn add_new_customer_fails() {
         let new_cust = SCustomer {
             id: 32,
             name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
-            location: "New Delhi".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (40, 34),
         };
         // Dispatch a signed extrinsic.
-        assert_ok!(TemplateModule::add_new_customer(
+        assert_ok!(Carpooling::add_new_customer(
             Origin::signed(1),
             42,
             new_cust
@@ -38,10 +38,10 @@ fn add_new_customer_fails() {
         let new_cust_1 = SCustomer {
             id: 32,
             name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
-            location: "New Delhi".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (40, 34),
         };
         assert_eq!(
-            TemplateModule::add_new_customer(Origin::signed(1), 42, new_cust_1),
+            Carpooling::add_new_customer(Origin::signed(1), 42, new_cust_1),
             Err(Module {
                 index: 1,
                 error: 0,
@@ -57,14 +57,14 @@ fn check_storage() {
         let new_cust = SCustomer {
             id: 32,
             name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
-            location: "New Delhi".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (40, 34),
         };
         let new_cust_1 = new_cust.clone();
-        assert_ok!(TemplateModule::add_new_customer(
+        assert_ok!(Carpooling::add_new_customer(
             Origin::signed(1),
             42,
             new_cust
         ));
-        assert_eq!(TemplateModule::get_customer(42), Some(new_cust_1));
+        assert_eq!(Carpooling::get_customer(42), Some(new_cust_1));
     })
 }
