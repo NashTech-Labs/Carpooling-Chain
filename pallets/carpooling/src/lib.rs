@@ -53,13 +53,13 @@ pub mod pallet {
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage
 	#[pallet::storage]
 	#[pallet::getter(fn get_customer)]
-    pub type Customer<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, CustomerOf<T>>;
+    pub type Customer<T: Config> = StorageMap<_, Blake2_128Concat, u32, CustomerOf<T>>;
 	#[pallet::storage]
     #[pallet::getter(fn get_driver)]
     pub type Driver<T: Config> = StorageMap<_, Blake2_128Concat, u32, DriverOf<T>>;
 	#[pallet::storage]
     #[pallet::getter(fn get_booking)]
-    pub type Booking<T: Config> = StorageMap<_, Blake2_128Concat, T::AccountId, T::AccountId>;
+    pub type Booking<T: Config> = StorageMap<_, Blake2_128Concat, u32, u32>;
 	// Learn more about declaring storage items:
 	// https://substrate.dev/docs/en/knowledgebase/runtime/storage#declaring-storage-items
 
