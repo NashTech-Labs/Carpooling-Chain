@@ -85,8 +85,17 @@ pub mod pallet {
     // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        /// An example dispatchable that takes a singles value as a parameter, writes the value to
-        /// storage and emits an event. This function must be dispatched by a signed extrinsic.
+        /// add_new_customer Dispatchable function used to add new customer.
+        ///
+        /// #Arguments
+        ///
+        /// origin : Origin Structure.
+        /// cust_id : Customer Id of u32 Type.
+        /// new_cust : Customer Structure.
+        ///
+        /// #Return
+        ///
+        /// Returns Result type.
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn add_new_customer(
             origin: OriginFor<T>,
