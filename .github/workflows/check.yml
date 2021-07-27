@@ -4,9 +4,9 @@ name: Check Set-Up & Build
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master, dev ]
+    branches: [ master ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -42,32 +42,3 @@ jobs:
         run: >
           pushd node &&
           cargo check --features=runtime-benchmarks --release
-
- 
-  clippy_check:
-    name: Clippy Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
-      - run: rustup component add clippy
-      - run: cargo clippy -- -D warnings
-
-  coverage:
-     name: Test Coverage
-     runs-on: ubuntu-latest
-     steps:
-       - name: Checkout repository
-         uses: actions/checkout@v2
-
-       - name: Install stable toolchain
-         uses: actions-rs/toolchain@v1
-         with:
-           toolchain: stable
-           override: true
-
-       - name: Run cargo-tarpaulin
-         uses: actions-rs/tarpaulin@v0.1
-         with:
-           version: '0.15.0'
-           args: '-- --test-threads 1'
-              
