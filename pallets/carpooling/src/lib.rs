@@ -86,6 +86,17 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
         /// An example dispatchable that takes a singles value as a parameter, writes the value to
         /// storage and emits an event. This function must be dispatched by a signed extrinsic.
+
+        /// update_cab_location changes the current location of the cab.
+        ///
+        /// #Arguments
+        /// origin - A parameter that contains the AccountId of the node that performed the call.
+        /// driver_id - A u32 parameter that contains the cab driver's ID
+        /// location - A (u32,u32) tuple containing latitude an longitude to denote cab's location.
+        ///
+        /// #Return
+        /// A DispatchResult type object denoting the Result of the performed call.
+
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn update_cab_location(
             origin: OriginFor<T>,
@@ -101,13 +112,13 @@ pub mod pallet {
                 <Driver<T>>::contains_key(&driver_id),
                 Error::<T>::DriverDoesNotExist
             );
-            let new_driver_option = <Driver<T>>::get(&driver_id);
-            let mut new_driver = new_driver_option.unwrap();
-            new_driver.location.0 = location.0;
-            new_driver.location.1 = location.1;
-            <Driver<T>>::insert(&driver_id, new_driver);
-
-            Self::deposit_event(Event::DriverLocationUpdated(who, new_driver.id));
+            let driver_option = <Driver<T>>::get(&driver_id);
+            if let Some(mut driver) = driver_option {
+                driver.location.0 = location.0;
+                driver.location.1 = location.1;
+                <Driver<T>>::insert(&driver_id, driver);
+                Self::deposit_event(Event::DriverLocationUpdated(who, driver.id));
+            }
             Ok(().into())
         }
     }
