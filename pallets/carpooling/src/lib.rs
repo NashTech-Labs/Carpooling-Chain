@@ -89,13 +89,17 @@ pub mod pallet {
         ///
         /// #Arguments
         ///
-        /// origin : Origin Structure.
-        /// cust_id : Customer Id of u32 Type.
-        /// new_cust : Customer Structure.
+        /// * `origin` : Origin Structure.
+        /// * `cust_id` : Customer Id of u32 Type.
+        /// * `new_cust` : Customer Structure.
         ///
         /// #Return
         ///
-        /// Returns Result type.
+        /// Returns A DispatchResult type object denoting the Result of the performed call.
+        ///
+        /// #ERROR
+        ///
+        /// If the customer id already exists, it will emit CustomerAlreadyExist error.
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn add_new_customer(
             origin: OriginFor<T>,
@@ -110,7 +114,6 @@ pub mod pallet {
                     <Customer<T>>::insert(cust_id, new_cust);
                 }
             }
-
             // Emit an event.
             Self::deposit_event(Event::CustomerAdded(cust_id, who));
             // Return a successful DispatchResultWithPostInfo
