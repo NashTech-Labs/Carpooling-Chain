@@ -87,12 +87,24 @@ pub mod pallet {
     // Dispatchable functions must be annotated with a weight and must return a DispatchResult.
     #[pallet::call]
     impl<T: Config> Pallet<T> {
-        /// add_new_cab is a dispatchable which takes three arguments:
-        /// origin: A parameter that is bound by Into trait that contains the address of node that made the call.
-        /// cab_id: The new Id for creating a new Cab
-        /// new_cab: A struct of DriverOf<T> type, which has all the informations of the cab
+        /// add_new_cab is a dispatchable which adds a new cab
+        /// 
+        /// #Arguments
+        /// 
+        /// * `origin` - A parameter that is bound by Into trait that contains the address of node that made the call.
+        /// 
+        /// * `cab_id` - The new Id for creating a new Cab
         ///
-        ///Return a successful DispatchResultWithPostInfo
+        /// * `new_cab` - A struct of DriverOf<T> type, which has all the informations of the cab
+        ///
+        /// #Return
+        /// 
+        /// A DispatchResult type object denoting the Result of the performed call.
+        /// 
+        /// # ERROR
+        /// 
+        /// If the cab id already exists, it will emit CabAlreadyExist error.
+        
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn add_new_cab(
             origin: OriginFor<T>,
@@ -103,13 +115,14 @@ pub mod pallet {
             // This function will return an error if the extrinsic is not signed.
             // https://substrate.dev/docs/en/knowledgebase/runtime/origin
             let who = ensure_signed(origin)?;
-            let driver_option = <Driver<T>>::get(cab_id);
-            if let None = driver_option {
-                <Driver<T>>::insert(cab_id, new_cab);
+            match <Driver<T>>::get(cab_id) {
+                Some(_) => Err(Error::<T>::CabAlreadyExist)?,
+                None => {
+                    <Driver<T>>::insert(cab_id, new_cab);
+                }
             }
             // Emit an event.
             Self::deposit_event(Event::CabAdded(cab_id, who));
-            // Return a successful DispatchResultWithPostInfo
             Ok(())
         }
     }
