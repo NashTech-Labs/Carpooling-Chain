@@ -104,9 +104,7 @@ pub mod pallet {
             // https://substrate.dev/docs/en/knowledgebase/runtime/origin
             let who = ensure_signed(origin)?;
             let driver_option = <Driver<T>>::get(cab_id);
-            if let Some(_) = driver_option {
-                Err(Error::<T>::CabAlreadyExist)?;
-            } else {
+            if let None = driver_option {
                 <Driver<T>>::insert(cab_id, new_cab);
             }
             // Emit an event.
