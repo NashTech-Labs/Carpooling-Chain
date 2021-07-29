@@ -88,23 +88,23 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
         /// add_new_cab is a dispatchable which adds a new cab
-        /// 
+        ///
         /// #Arguments
-        /// 
+        ///
         /// * `origin` - A parameter that is bound by Into trait that contains the address of node that made the call.
-        /// 
+        ///
         /// * `cab_id` - The new Id for creating a new Cab
         ///
         /// * `new_cab` - A struct of DriverOf<T> type, which has all the informations of the cab
         ///
         /// #Return
-        /// 
+        ///
         /// A DispatchResult type object denoting the Result of the performed call.
-        /// 
+        ///
         /// # ERROR
-        /// 
+        ///
         /// If the cab id already exists, it will emit CabAlreadyExist error.
-        
+
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn add_new_cab(
             origin: OriginFor<T>,
