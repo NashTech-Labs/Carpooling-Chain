@@ -70,6 +70,7 @@ pub mod pallet {
     pub enum Event<T: Config> {
         // event emitted when driver's location is updated.
         DriverLocationUpdated(T::AccountId, u32),
+        CabBooked(T::AccountId, u32),
     }
 
     // Errors inform users that something went wrong.
@@ -77,6 +78,7 @@ pub mod pallet {
     pub enum Error<T> {
         // Error emitted when driver is not found in storage.
         DriverDoesNotExist,
+        CabIsAlreadyBooked,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -93,17 +95,17 @@ pub mod pallet {
         ///
         /// * `origin` - A parameter that contains the AccountId of the node that performed the call.
         ///
-		/// * `driver_id` - A u32 parameter that contains the cab driver's ID
+        /// * `driver_id` - A u32 parameter that contains the cab driver's ID
         ///
-		/// * `location` - A (u32,u32) tuple containing latitude an longitude to denote cab's location.
+        /// * `location` - A (u32,u32) tuple containing latitude an longitude to denote cab's location.
         ///
         /// # Return
         ///
         /// A DispatchResult type object denoting the Result of the performed call.
         ///
         /// # ERROR
-		///
-		/// If this function does not find the driver_id as the key in Driver StorageMap then it emits a DriverDoesNotExist Error.
+        ///
+        /// If this function does not find the driver_id as the key in Driver StorageMap then it emits a DriverDoesNotExist Error.
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn update_cab_location(
@@ -120,6 +122,7 @@ pub mod pallet {
                 <Driver<T>>::contains_key(&driver_id),
                 Error::<T>::DriverDoesNotExist
             );
+
             let driver_option = <Driver<T>>::get(&driver_id);
             if let Some(mut driver) = driver_option {
                 driver.location.0 = location.0;
@@ -127,6 +130,47 @@ pub mod pallet {
                 <Driver<T>>::insert(&driver_id, driver);
                 Self::deposit_event(Event::DriverLocationUpdated(who, driver.id));
             }
+            Ok(().into())
+        }
+
+        /// book_ride books a cab for the customer.
+        ///
+        /// # Arguments
+        ///
+        /// * `origin` - A parameter that contains the AccountId of the node that performed the call.
+        ///
+        /// * `driver_id` - A u32 parameter that contains the cab driver's ID
+        ///
+        /// * `customer_id` - A u32 parameter that contains the cab customer's ID
+        ///
+        /// # Return
+        ///
+        /// A DispatchResult type object denoting the Result of the performed call.
+        ///
+        /// # ERROR
+        ///
+        /// * `DriverDoesNotExist` - emits this error if the driver is not present in Driver StorageMap.
+        ///
+        /// * `CabIsAlreadyBooked` - emits this error if the driver's id is already present in Booking StorageMap.
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn book_ride(origin: OriginFor<T>, driver_id: u32, customer_id: u32) -> DispatchResult {
+            // Check that the extrinsic was signed and get the signer.
+            // This function will return an error if the extrinsic is not signed.
+            // https://substrate.dev/docs/en/knowledgebase/runtime/origin
+
+            let who = ensure_signed(origin)?;
+            ensure!(
+                <Driver<T>>::contains_key(&driver_id),
+                Error::<T>::DriverDoesNotExist
+            );
+            ensure!(
+                !(<Booking<T>>::contains_key(&driver_id)),
+                Error::<T>::CabIsAlreadyBooked
+            );
+            <Booking<T>>::insert(&driver_id, &customer_id);
+            Self::deposit_event(Event::CabBooked(who, driver_id));
+
             Ok(().into())
         }
     }
