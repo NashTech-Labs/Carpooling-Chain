@@ -101,3 +101,56 @@ fn add_new_cab_fails() {
         );
     });
 }
+
+#[test]
+fn book_ride_success() {
+    new_test_ext().execute_with(|| {
+        let driver = SDriver {
+            id: 20,
+            car_no: "UP76 E 8559".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (20, 30),
+            price: 20,
+        };
+
+        Driver::<Test>::insert(10, driver);
+        assert_ok!(Carpooling::book_ride(Origin::signed(10), 10, 20));
+        assert_eq!(<Booking<Test>>::get(10), Some(20));
+    });
+}
+
+#[test]
+fn book_ride_fail_no_driver() {
+    new_test_ext().execute_with(|| {
+        assert_eq!(
+            Carpooling::book_ride(Origin::signed(1), 10, 20),
+            Err(DispatchError::Module {
+                index: 1,
+                error: 0,
+                message: Some("DriverDoesNotExist",),
+            })
+        )
+    });
+}
+
+#[test]
+fn book_ride_fail_not_empty() {
+    new_test_ext().execute_with(|| {
+        let driver = SDriver {
+            id: 20,
+            car_no: "UP76 E 8559".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (20, 30),
+            price: 20,
+        };
+
+        Driver::<Test>::insert(10, driver);
+        Booking::<Test>::insert(10, 20);
+        assert_eq!(
+            Carpooling::book_ride(Origin::signed(1), 10, 20),
+            Err(DispatchError::Module {
+                index: 1,
+                error: 2,
+                message: Some("CabIsAlreadyBooked",),
+            })
+        )
+    });
+}
