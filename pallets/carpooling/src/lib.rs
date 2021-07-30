@@ -70,6 +70,8 @@ pub mod pallet {
     pub enum Event<T: Config> {
         // event emitted when driver's location is updated.
         DriverLocationUpdated(T::AccountId, u32),
+        // event emitted when cab is added.
+        CabAdded(u32, T::AccountId),
     }
 
     // Errors inform users that something went wrong.
@@ -77,6 +79,10 @@ pub mod pallet {
     pub enum Error<T> {
         // Error emitted when driver is not found in storage.
         DriverDoesNotExist,
+
+        CabAlreadyExist,
+
+        StorageOverflow,
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -93,17 +99,17 @@ pub mod pallet {
         ///
         /// * `origin` - A parameter that contains the AccountId of the node that performed the call.
         ///
-		/// * `driver_id` - A u32 parameter that contains the cab driver's ID
+        /// * `driver_id` - A u32 parameter that contains the cab driver's ID
         ///
-		/// * `location` - A (u32,u32) tuple containing latitude an longitude to denote cab's location.
+        /// * `location` - A (u32,u32) tuple containing latitude an longitude to denote cab's location.
         ///
         /// # Return
         ///
         /// A DispatchResult type object denoting the Result of the performed call.
         ///
         /// # ERROR
-		///
-		/// If this function does not find the driver_id as the key in Driver StorageMap then it emits a DriverDoesNotExist Error.
+        ///
+        /// If this function does not find the driver_id as the key in Driver StorageMap then it emits a DriverDoesNotExist Error.
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn update_cab_location(
@@ -128,6 +134,42 @@ pub mod pallet {
                 Self::deposit_event(Event::DriverLocationUpdated(who, driver.id));
             }
             Ok(().into())
+        }
+
+        /// add_new_cab is a dispatchable which adds a new cab
+        ///
+        /// #Arguments
+        ///
+        /// * `origin` - A parameter that is bound by Into trait that contains the address of node that made the call.
+        ///
+        /// * `cab_id` - The new Id for creating a new Cab
+        ///
+        /// * `new_cab` - A struct of DriverOf<T> type, which has all the informations of the cab
+        ///
+        /// #Return
+        ///
+        /// A DispatchResult type object denoting the Result of the performed call.
+        ///
+        /// # ERROR
+        ///
+        /// If the cab id already exists, it will emit CabAlreadyExist error.
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn add_new_cab(
+            origin: OriginFor<T>,
+            cab_id: u32,
+            new_cab: DriverOf<T>,
+        ) -> DispatchResult {
+            let who = ensure_signed(origin)?;
+            match <Driver<T>>::get(cab_id) {
+                Some(_) => Err(Error::<T>::CabAlreadyExist)?,
+                None => {
+                    <Driver<T>>::insert(cab_id, new_cab);
+                }
+            }
+            // Emit an event.
+            Self::deposit_event(Event::CabAdded(cab_id, who));
+            Ok(())
         }
     }
 }
