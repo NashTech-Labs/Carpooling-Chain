@@ -113,7 +113,7 @@ pub mod pallet {
         ///
         /// # ERROR
         ///
-        /// If this function does not find the driver_id as the key in Driver StorageMap then it emits a CustomerDoesNotExist Error.
+        /// If this function does not find the driver_id as the key in Driver StorageMap then it emits a DriverDoesNotExist Error.
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn update_cab_location(
