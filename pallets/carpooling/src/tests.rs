@@ -26,6 +26,7 @@ fn update_cab_location_success() {
             car_no: "UP76 E 8559".using_encoded(<Test as frame_system::Config>::Hashing::hash),
             location: (20, 30),
             price: 20,
+            destination: (40,40),
         };
         let new_location: (u32, u32) = (40, 40);
         let new_driver = SDriver {
@@ -33,6 +34,7 @@ fn update_cab_location_success() {
             car_no: "UP76 E 8559".using_encoded(<Test as frame_system::Config>::Hashing::hash),
             location: new_location,
             price: 20,
+            destination: (40,40),
         };
         Driver::<Test>::insert(10, old_driver);
         assert_ok!(Carpooling::update_cab_location(
@@ -65,6 +67,7 @@ fn add_new_cab() {
             car_no: "2345".using_encoded(<Test as frame_system::Config>::Hashing::hash),
             location: (20, 30),
             price: 12,
+            destination: (40,40),
         };
         // Dispatch a signed extrinsic.
         assert_eq!(
@@ -82,6 +85,7 @@ fn add_new_cab_fails() {
             car_no: "2345".using_encoded(<Test as frame_system::Config>::Hashing::hash),
             location: (20, 30),
             price: 12,
+            destination: (30,30),
         };
         // Dispatch a signed extrinsic.
         assert_ok!(Carpooling::add_new_cab(Origin::signed(1), 42, new_cab));
@@ -90,6 +94,7 @@ fn add_new_cab_fails() {
             car_no: "2345".using_encoded(<Test as frame_system::Config>::Hashing::hash),
             location: (20, 30),
             price: 12,
+            destination: (30,40),
         };
         assert_eq!(
             Carpooling::add_new_cab(Origin::signed(1), 42, new_cab_1),
