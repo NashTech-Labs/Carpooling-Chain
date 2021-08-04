@@ -74,6 +74,8 @@ pub mod pallet {
         CabAdded(u32, T::AccountId),
         // event emitted when cab is booked.
         CabBooked(T::AccountId, u32),
+        // event emitted when customer is added.
+        CustomerAdded(u32, T::AccountId),
     }
 
     // Errors inform users that something went wrong.
@@ -87,6 +89,9 @@ pub mod pallet {
 
         // Error emitted when Driver's id is already present in Booking StorageMap.
         CabIsAlreadyBooked,
+
+        // Error emitted when Customer's id is already present in Booking StorageMap.
+        CustomerAlreadyExist,
 
         StorageOverflow,
     }
@@ -116,7 +121,6 @@ pub mod pallet {
         /// # ERROR
         ///
         /// If this function does not find the driver_id as the key in Driver StorageMap then it emits a DriverDoesNotExist Error.
-
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn update_cab_location(
             origin: OriginFor<T>,
@@ -159,7 +163,6 @@ pub mod pallet {
         /// # ERROR
         ///
         /// If the cab id already exists, it will emit CabAlreadyExist error.
-
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn add_new_cab(
             origin: OriginFor<T>,
@@ -197,7 +200,6 @@ pub mod pallet {
         /// * `DriverDoesNotExist` - emits this error if the driver is not present in Driver StorageMap.
         ///
         /// * `CabIsAlreadyBooked` - emits this error if the driver's id is already present in Booking StorageMap.
-
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn book_ride(origin: OriginFor<T>, driver_id: u32, customer_id: u32) -> DispatchResult {
             // Check that the extrinsic was signed and get the signer.
@@ -217,6 +219,42 @@ pub mod pallet {
             Self::deposit_event(Event::CabBooked(who, driver_id));
 
             Ok(().into())
+        }
+
+        /// add_new_customer Dispatchable function used to add new customer.
+        ///
+        /// # Arguments
+        ///
+        /// * `origin` : Origin Structure.
+        ///
+        /// * `cust_id` : Customer Id of u32 Type.
+        ///
+        /// * `new_cust` : Customer Structure.
+        ///
+        /// # Return
+        ///
+        /// Returns A DispatchResult type object denoting the Result of the performed call.
+        ///
+        /// # ERROR
+        ///
+        /// If the customer id already exists, it will emit CustomerAlreadyExist error.
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn add_new_customer(
+            origin: OriginFor<T>,
+            cust_id: u32,
+            new_cust: CustomerOf<T>,
+        ) -> DispatchResult {
+            let who = ensure_signed(origin)?;
+            match <Customer<T>>::get(cust_id) {
+                Some(_) => Err(Error::<T>::CustomerAlreadyExist)?,
+                None => {
+                    <Customer<T>>::insert(cust_id, new_cust);
+                }
+            }
+            // Emit an event.
+            Self::deposit_event(Event::CustomerAdded(cust_id, who));
+            // Return a successful DispatchResultWithPostInfo
+            Ok(())
         }
     }
 }
