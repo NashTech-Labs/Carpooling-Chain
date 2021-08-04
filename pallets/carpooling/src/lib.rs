@@ -76,6 +76,8 @@ pub mod pallet {
         CabBooked(T::AccountId, u32),
         // event emitted when customer is added.
         CustomerAdded(u32, T::AccountId),
+        // event emitted when cab is made idle.
+        CabIsIdle(u32, T::AccountId),
     }
 
     // Errors inform users that something went wrong.
@@ -90,8 +92,11 @@ pub mod pallet {
         // Error emitted when Driver's id is already present in Booking StorageMap.
         CabIsAlreadyBooked,
 
-        // Error emitted when Customer's id is already present in Booking StorageMap.
+        // Error emitted when Customer's id is already present in Customer StorageMap.
         CustomerAlreadyExist,
+
+        // Error emitted when Cab is already idle and not present in Booking StorageMap.
+        CabIsAlreadyIdle,
 
         StorageOverflow,
     }
@@ -254,6 +259,33 @@ pub mod pallet {
             // Emit an event.
             Self::deposit_event(Event::CustomerAdded(cust_id, who));
             // Return a successful DispatchResultWithPostInfo
+            Ok(())
+        }
+
+        /// make_cab_idle Dispatchable function used to add new customer.
+        ///
+        /// # Arguments
+        ///
+        /// * `origin` : Origin Structure.
+        ///
+        /// * `driver_id` : Driver Id of u32 Type.
+        ///
+        /// # Return
+        ///
+        /// Returns A DispatchResult type object denoting the Result of the performed call.
+        ///
+        /// # ERROR
+        ///
+        /// If the customer id already exists, it will emit CabIsAlreadyIdle error.
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn make_cab_idle(origin: OriginFor<T>, driver_id: u32) -> DispatchResult {
+            let who = ensure_signed(origin)?;
+            match <Booking<T>>::get(driver_id) {
+                Some(_) => <Booking<T>>::remove(driver_id),
+                None => Err(Error::<T>::CabIsAlreadyIdle)?,
+            }
+            Self::deposit_event(Event::CabIsIdle(driver_id, who));
             Ok(())
         }
     }

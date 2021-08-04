@@ -156,61 +156,80 @@ fn book_ride_fail_not_empty() {
 }
 #[test]
 fn add_new_customer() {
-	new_test_ext().execute_with(|| {
-		let new_cust = SCustomer {
-			id: 32,
-			name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
-			location: (40, 34),
-		};
-		assert_eq!(
-			Carpooling::add_new_customer(Origin::signed(1), 42, new_cust),
-			Ok(())
-		);
-	});
+    new_test_ext().execute_with(|| {
+        let new_cust = SCustomer {
+            id: 32,
+            name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (40, 34),
+        };
+        assert_eq!(
+            Carpooling::add_new_customer(Origin::signed(1), 42, new_cust),
+            Ok(())
+        );
+    });
 }
 #[test]
 fn add_new_customer_fails() {
-	new_test_ext().execute_with(|| {
-		let new_cust = SCustomer {
-			id: 32,
-			name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
-			location: (40, 34),
-		};
-		assert_ok!(Carpooling::add_new_customer(
+    new_test_ext().execute_with(|| {
+        let new_cust = SCustomer {
+            id: 32,
+            name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (40, 34),
+        };
+        assert_ok!(Carpooling::add_new_customer(
             Origin::signed(1),
             42,
             new_cust
         ));
-		let new_cust_1 = SCustomer {
-			id: 32,
-			name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
-			location: (40, 34),
-		};
-		assert_eq!(
-			Carpooling::add_new_customer(Origin::signed(1), 42, new_cust_1),
-			Err(DispatchError::Module {
-				index: 1,
-				error: 3,
-				message: Some("CustomerAlreadyExist")
-			})
-		);
-	});
+        let new_cust_1 = SCustomer {
+            id: 32,
+            name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (40, 34),
+        };
+        assert_eq!(
+            Carpooling::add_new_customer(Origin::signed(1), 42, new_cust_1),
+            Err(DispatchError::Module {
+                index: 1,
+                error: 3,
+                message: Some("CustomerAlreadyExist")
+            })
+        );
+    });
 }
 #[test]
 fn check_storage_for_add_customer() {
-	new_test_ext().execute_with(|| {
-		let new_cust = SCustomer {
-			id: 32,
-			name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
-			location: (40, 34),
-		};
-		let new_cust_1 = new_cust.clone();
-		assert_ok!(Carpooling::add_new_customer(
+    new_test_ext().execute_with(|| {
+        let new_cust = SCustomer {
+            id: 32,
+            name: "Ankit".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (40, 34),
+        };
+        let new_cust_1 = new_cust.clone();
+        assert_ok!(Carpooling::add_new_customer(
             Origin::signed(1),
             42,
             new_cust
         ));
-		assert_eq!(Carpooling::get_customer(42), Some(new_cust_1));
-	})
+        assert_eq!(Carpooling::get_customer(42), Some(new_cust_1));
+    })
 }
-
+#[test]
+fn check_cab_idle() {
+    new_test_ext().execute_with(|| {
+        Booking::<Test>::insert(10, 20);
+        assert_eq!(Carpooling::make_cab_idle(Origin::signed(1), 10), Ok(()));
+    });
+}
+#[test]
+fn check_cab_already_idle() {
+    new_test_ext().execute_with(|| {
+        assert_eq!(
+            Carpooling::make_cab_idle(Origin::signed(1), 10),
+            Err(DispatchError::Module {
+                index: 1,
+                error: 4,
+                message: Some("CabIsAlreadyIdle")
+            })
+        );
+    });
+}
