@@ -72,6 +72,8 @@ pub mod pallet {
         DriverLocationUpdated(T::AccountId, u32),
         // event emitted when cab is added.
         CabAdded(u32, T::AccountId),
+        // event emitted when cab is booked.
+        CabBooked(T::AccountId, u32),
     }
 
     // Errors inform users that something went wrong.
@@ -80,7 +82,11 @@ pub mod pallet {
         // Error emitted when driver is not found in storage.
         DriverDoesNotExist,
 
+        // Error emitted when Driver is already present in Driver StorageMap.
         CabAlreadyExist,
+
+        // Error emitted when Driver's id is already present in Booking StorageMap.
+        CabIsAlreadyBooked,
 
         StorageOverflow,
     }
@@ -170,6 +176,47 @@ pub mod pallet {
             // Emit an event.
             Self::deposit_event(Event::CabAdded(cab_id, who));
             Ok(())
+        }
+
+        /// book_ride books a cab for the customer.
+        ///
+        /// # Arguments
+        ///
+        /// * `origin` - A parameter that contains the AccountId of the node that performed the call.
+        ///
+        /// * `driver_id` - A u32 parameter that contains the cab driver's ID
+        ///
+        /// * `customer_id` - A u32 parameter that contains the cab customer's ID
+        ///
+        /// # Return
+        ///
+        /// A DispatchResult type object denoting the Result of the performed call.
+        ///
+        /// # ERROR
+        ///
+        /// * `DriverDoesNotExist` - emits this error if the driver is not present in Driver StorageMap.
+        ///
+        /// * `CabIsAlreadyBooked` - emits this error if the driver's id is already present in Booking StorageMap.
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn book_ride(origin: OriginFor<T>, driver_id: u32, customer_id: u32) -> DispatchResult {
+            // Check that the extrinsic was signed and get the signer.
+            // This function will return an error if the extrinsic is not signed.
+            // https://substrate.dev/docs/en/knowledgebase/runtime/origin
+
+            let who = ensure_signed(origin)?;
+            ensure!(
+                <Driver<T>>::contains_key(&driver_id),
+                Error::<T>::DriverDoesNotExist
+            );
+            ensure!(
+                !(<Booking<T>>::contains_key(&driver_id)),
+                Error::<T>::CabIsAlreadyBooked
+            );
+            <Booking<T>>::insert(&driver_id, &customer_id);
+            Self::deposit_event(Event::CabBooked(who, driver_id));
+
+            Ok(().into())
         }
     }
 }
