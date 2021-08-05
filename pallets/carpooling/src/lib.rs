@@ -230,7 +230,7 @@ pub mod pallet {
         ///
         /// # Arguments
         ///
-        /// * `origin` : Origin Structure.
+        /// * `origin` : A parameter that contains the AccountId of the node that performed the call.
         ///
         /// * `cust_id` : Customer Id of u32 Type.
         ///
@@ -266,7 +266,7 @@ pub mod pallet {
         ///
         /// # Arguments
         ///
-        /// * `origin` : Origin Structure.
+        /// * `origin` : A parameter that contains the AccountId of the node that performed the call.
         ///
         /// * `driver_id` : Driver Id of u32 Type.
         ///
