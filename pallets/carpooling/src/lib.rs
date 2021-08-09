@@ -36,6 +36,7 @@ pub mod pallet {
         pub car_no: Hash,
         pub location: (u32, u32),
         pub price: u32,
+        pub destination: (u32, u32),
     }
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
