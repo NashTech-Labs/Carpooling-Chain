@@ -103,6 +103,43 @@ fn add_new_cab_fails() {
 }
 
 #[test]
+fn update_customer_location_success() {
+    new_test_ext().execute_with(|| {
+        let old_cust = SCustomer {
+            id: 20,
+            name: "ABC".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: (20, 30),
+        };
+        let new_location: (u32, u32) = (70, 60);
+        let new_cust = SCustomer {
+            id: 20,
+            name: "ABC".using_encoded(<Test as frame_system::Config>::Hashing::hash),
+            location: new_location,
+        };
+        Customer::<Test>::insert(10, old_cust);
+        assert_ok!(Carpooling::update_customer_location(
+            Origin::signed(10),
+            10,
+            new_location
+        ));
+        assert_eq!(<Customer<Test>>::get(10), Some(new_cust));
+    });
+}
+#[test]
+fn update_customer_location_fail() {
+    new_test_ext().execute_with(|| {
+        let new_location: (u32, u32) = (40, 50);
+        assert_eq!(
+            Carpooling::update_customer_location(Origin::signed(1), 42, new_location),
+            Err(DispatchError::Module {
+                index: 1,
+                error: 4,
+                message: Some("CustomerDoesNotExist",),
+            })
+        )
+    });
+}
+#[test]
 fn book_ride_success() {
     new_test_ext().execute_with(|| {
         let driver = SDriver {
