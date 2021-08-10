@@ -36,6 +36,7 @@ pub mod pallet {
         pub car_no: Hash,
         pub location: (u32, u32),
         pub price: u32,
+        pub destination: (u32, u32),
     }
     /// Configure the pallet by specifying the parameters and types on which it depends.
     #[pallet::config]
@@ -78,6 +79,8 @@ pub mod pallet {
         CustomerAdded(u32, T::AccountId),
         // event emitted when cab is made idle.
         CabIsIdle(u32, T::AccountId),
+        // event emitted when customers's location is updated.
+        CustomerLocationUpdated(T::AccountId, u32),
     }
 
     // Errors inform users that something went wrong.
@@ -99,6 +102,9 @@ pub mod pallet {
         CabIsAlreadyIdle,
 
         StorageOverflow,
+
+        CustomerDoesNotExist,
+
     }
 
     // Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -259,7 +265,7 @@ pub mod pallet {
             // Emit an event.
             Self::deposit_event(Event::CustomerAdded(cust_id, who));
             // Return a successful DispatchResultWithPostInfo
-            Ok(())
+            Ok(().into())
         }
 
         /// make_cab_idle Dispatchable function used to add new customer.
@@ -280,13 +286,55 @@ pub mod pallet {
 
         #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
         pub fn make_cab_idle(origin: OriginFor<T>, driver_id: u32) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+			match <Booking<T>>::get(driver_id) {
+				Some(_) => <Booking<T>>::remove(driver_id),
+				None => Err(Error::<T>::CabIsAlreadyIdle)?,
+			}
+			Self::deposit_event(Event::CabIsIdle(driver_id, who));
+			Ok(())
+		}
+         /// update_customer_location changes the current location of the customer.
+        ///
+        /// # Arguments
+        ///
+        /// * `origin` - A parameter that contains the AccountId of the node that performed the call.
+        ///
+        /// * `cust_id` - A u32 parameter that contains the customer's ID
+        ///
+        /// * `location` - A (u32,u32) tuple containing latitude an longitude to denote customer's location.
+        ///
+        /// # Return
+        ///
+        /// A DispatchResult type object denoting the Result of the performed call.
+        ///
+        /// # ERROR
+        ///
+        /// If this function does not find the customer_id as the key in Customer StorageMap then it emits a DriverDoesNotExist Error.
+
+        #[pallet::weight(10_000 + T::DbWeight::get().writes(1))]
+        pub fn update_customer_location(
+            origin: OriginFor<T>,
+            cust_id: u32,
+            location: (u32, u32),
+        ) -> DispatchResult {
+            // Check that the extrinsic was signed and get the signer.
+            // This function will return an error if the extrinsic is not signed.
+            // https://substrate.dev/docs/en/knowledgebase/runtime/origin
+
             let who = ensure_signed(origin)?;
-            match <Booking<T>>::get(driver_id) {
-                Some(_) => <Booking<T>>::remove(driver_id),
-                None => Err(Error::<T>::CabIsAlreadyIdle)?,
+            ensure!(
+                <Customer<T>>::contains_key(&cust_id),
+                Error::<T>::CustomerDoesNotExist
+            );
+            let cust_option = <Customer<T>>::get(&cust_id);
+            if let Some(mut customer) = cust_option {
+                customer.location.0 = location.0;
+                customer.location.1 = location.1;
+                <Customer<T>>::insert(&cust_id, customer);
+                Self::deposit_event(Event::CustomerLocationUpdated(who, customer.id));
             }
-            Self::deposit_event(Event::CabIsIdle(driver_id, who));
-            Ok(())
+            Ok(().into())
         }
     }
 }
