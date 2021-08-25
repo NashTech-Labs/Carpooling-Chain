@@ -7,9 +7,18 @@ var crypto = require('crypto');
 const app = express();
 
 app.get('/index', (req, res) =>{
+
+    // digestMessage function converts a string to H256 hash string.
+    //
+    // # Arguments
+    //
+    // * `message` - A string parameter containing data to be converted.
+    //
+    // # Return
+    //
+    // A string containing hash value.
     async function digestMessage(message) {
-        try{
-            
+        try{            
             const hash = await crypto.createHash('sha256',message).digest('hex');
             return hash;
         }
@@ -19,7 +28,7 @@ app.get('/index', (req, res) =>{
         }
         
       }
-      
+    // main functions calls the addNewCab dispatch function to add a new cab.
     async function main(){
     
     
