@@ -1,0 +1,14 @@
+{
+  "DriverOf": {
+    "id": "u32",
+    "car_no": "Hash",
+    "location": "(u32, u32)",
+    "price": "u32",
+    "destination": "(u32, u32)"
+  },
+  "CustomerOf": {
+    "id": "u32",
+    "name": "Hash",
+    "location": "(u32, u32)"
+  }
+}
