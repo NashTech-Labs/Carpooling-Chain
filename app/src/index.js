@@ -45,9 +45,9 @@ app.get('/index', (req, res) =>{
         try{
             let namePromise = digestMessage("Ankit Mogha");
             namePromise.then((cust)=>{
-                const updateCustLocation = api.tx.carpooling.updateCustomerLocation(15,{id: 15, name: "0x"+cust, location: [20,40]});
-                updateCustLocation.signAndSend(alice);
-                console.log(`The customer location was changed successfully added`);
+                const updateCabLocation = api.tx.carpooling.updateCabLocation(15,{id: 15, location: [20,40]});
+                updateCabLocation.signAndSend(alice);
+                console.log(`The cab location was updated successfully`);
             });
 
         }

@@ -268,7 +268,7 @@ pub mod pallet {
             Ok(().into())
         }
 
-        /// make_cab_idle Dispatchable function used to add new customer.
+        /// make_cab_idle Dispatchable function used to make cab idle.
         ///
         /// # Arguments
         ///
