@@ -43,9 +43,8 @@ app.get('/index', (req, res) =>{
         });
 
         try{
-            let namePromise = digestMessage("Ankit Mogha");
             namePromise.then((cust)=>{
-                const makeCabIdle = api.tx.carpooling.makeCabIdle(15,{id: 15});
+                const makeCabIdle = api.tx.carpooling.makeCabIdle(15,id: 15);
                 makeCabIdle.signAndSend(alice);
                 console.log(`The cab was made Idle Successfully`);
             });
