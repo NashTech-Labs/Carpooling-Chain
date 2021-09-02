@@ -1,7 +1,8 @@
 // Import
 const express = require('express');
 const { ApiPromise, WsProvider } = require('@polkadot/api');
-
+const { Keyring } = require('@polkadot/keyring');
+const { readFileSync } = require('fs');
 var crypto = require('crypto');
 
 const app = express();
@@ -36,22 +37,11 @@ app.get('/index', (req, res) =>{
     
         // Construct
         const wsProvider = new WsProvider('ws://127.0.0.1:9944');
-    
+        const keyring = new Keyring({ type: 'sr25519' });
+        const alice = keyring.addFromUri('//Alice');
+        const types = JSON.parse(readFileSync('./types.json', 'utf8'));
         const api = await ApiPromise.create({ provider: wsProvider,
-            types: {
-                DriverOf: {
-                    id: 'u32',
-                    car_no: 'Hash',
-                    location: ('u32', 'u32'),
-                    price: 'u32',
-                    destination: ('u32', 'u32')
-                },
-                CustomerOf: {
-                    id: 'u32',
-                    name: 'Hash',
-                    location: ('u32', 'u32')
-                },
-              }
+            types
         });
         
         try{
