@@ -47,7 +47,7 @@ app.get('/index', (req, res) =>{
         try{
             let namePromise = digestMessage("Ayushi Dwivedi");
             namePromise.then((car_no)=>{
-                const addCab = api.tx.carpooling.addNewCab(15,{id: 15, car_no: car_no , location: (20,40), price: 30 , destination:(40,20)});
+                const addCab = api.tx.carpooling.addNewCab(15,{id: 15, car_no: car_no , location: [20,40], price: 30 , destination:[40,20]});
                 addCab.signAndSend(alice);
                 console.log(`The customer was successfully added`);
             });
