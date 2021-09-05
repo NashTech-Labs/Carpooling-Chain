@@ -8,30 +8,8 @@ var crypto = require('crypto');
 const app = express();
 
 app.get('/index', (req, res) =>{
-
-    // digestMessage function converts a string to H256 hash string.
-    //
-    // # Arguments
-    //
-    // * `message` - A string parameter containing data to be converted.
-    //
-    // # Return
-    //
-    // A string containing hash value.
-    async function digestMessage(message) {
-        try{
-            const hash = await crypto.createHash('sha256',message).digest('hex');
-            return hash;
-        }
-
-        catch(error){
-            console.log(error);
-        }
-
-      }
     // main functions calls the addNewCab dispatch function to add a new cab.
     async function main(){
-
 
         // Construct
         const wsProvider = new WsProvider('ws://127.0.0.1:9944');
