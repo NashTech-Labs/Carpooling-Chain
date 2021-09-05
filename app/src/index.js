@@ -43,13 +43,9 @@ app.get('/index', (req, res) =>{
         });
 
         try{
-            let namePromise = digestMessage("Ankit Mogha");
-            namePromise.then((cust)=>{
-                const updateCabLocation = api.tx.carpooling.updateCabLocation(15,{id: 15, location: [20,40]});
+                const updateCabLocation = api.tx.carpooling.updateCabLocation(15,id: 15, location: [20,40]);
                 updateCabLocation.signAndSend(alice);
                 console.log(`The cab location was updated successfully`);
-            });
-
         }
         catch(error){
             console.log(error);
