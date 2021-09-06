@@ -21,7 +21,7 @@ app.get('/index', (req, res) =>{
         });
 
         try{
-                const updateCabLocation = api.tx.carpooling.updateCabLocation(15,id: 15, location: [20,40]);
+                const updateCabLocation = api.tx.carpooling.updateCabLocation(15,[20,40]);
                 updateCabLocation.signAndSend(alice);
                 console.log(`The cab location was updated successfully`);
         }
