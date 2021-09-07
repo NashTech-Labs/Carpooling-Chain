@@ -98,7 +98,6 @@ app.get('/updatecust', (req, res) =>{
                 const updateCustLocation = api.tx.carpooling.updateCustLocation(15,[40,20]);
                 updateCustLocation.signAndSend(alice);
                 console.log(`The customer location was updated successfully`);
-            ;
 
         }
         catch(error){
