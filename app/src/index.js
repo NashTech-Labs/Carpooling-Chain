@@ -7,7 +7,7 @@ var crypto = require('crypto');
 
 const app = express();
 
-app.get('/index', (req, res) =>{
+app.get('/add-cab', (req, res) =>{
 
     // digestMessage function converts a string to H256 hash string.
     //
@@ -84,7 +84,6 @@ app.get('/update-cab-location', (req, res) =>{
     main().then(() => console.log('completed'));
     res.send("Done");
 });
-
 app.get('/book', (req, res) =>{
     // main functions calls the bookRide dispatch function to book a cab.
     async function main(){
