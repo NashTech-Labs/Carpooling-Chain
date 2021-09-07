@@ -95,7 +95,7 @@ app.get('/updatecust', (req, res) =>{
         });
 
         try{
-                const updateCustLocation = api.tx.carpooling.updateCustLocation(15,{id: 15, name: "0x"+cust, location: [40,20]});
+                const updateCustLocation = api.tx.carpooling.updateCustLocation(15,[40,20]);
                 updateCustLocation.signAndSend(alice);
                 console.log(`The customer location was updated successfully`);
             ;
