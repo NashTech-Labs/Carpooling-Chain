@@ -7,7 +7,7 @@ var crypto = require('crypto');
 
 const app = express();
 
-app.get('/index', (req, res) =>{
+app.get('/add-cab', (req, res) =>{
 
     // digestMessage function converts a string to H256 hash string.
     //
@@ -50,6 +50,29 @@ app.get('/index', (req, res) =>{
                 console.log(`The customer was successfully added`);
             });
             
+        }
+        catch(error){
+            console.log(error);
+        }  
+    }   
+    main().then(() => console.log('completed'));
+    res.send("Done");
+});
+app.get('/book', (req, res) =>{
+    // main functions calls the bookRide dispatch function to book a cab.
+    async function main(){
+        // Construct
+        const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+        const keyring = new Keyring({ type: 'sr25519' });
+        const alice = keyring.addFromUri('//Alice');
+        const types = JSON.parse(readFileSync('./types.json', 'utf8'));
+        const api = await ApiPromise.create({ provider: wsProvider,
+            types
+        });
+        try{
+            const booked = api.tx.carpooling.bookRide(15, 30);
+            booked.signAndSend(alice);
+            console.log(`The cab was successfully booked`);           
         }
         catch(error){
             console.log(error);
