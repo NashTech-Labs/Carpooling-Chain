@@ -190,4 +190,32 @@ app.get('/addcab', (req, res) =>{
     res.send("Done");
 });
 
+app.get('/updatecust', (req, res) =>{
+
+    // main functions calls the updatecustlocation dispatch function to update customer location.
+    async function main(){
+
+
+        // Construct
+        const wsProvider = new WsProvider('ws://127.0.0.1:9944');
+        const keyring = new Keyring({ type: 'sr25519' });
+        const alice = keyring.addFromUri('//Alice');
+        const types = JSON.parse(readFileSync('./types.json', 'utf8'));
+        const api = await ApiPromise.create({ provider: wsProvider,
+            types
+        });
+
+        try{
+                const updateCustLocation = api.tx.carpooling.updateCustLocation(15,[40,20]);
+                updateCustLocation.signAndSend(alice);
+                console.log(`The customer location was updated successfully`);
+
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+    main().then(() => console.log('completed'));
+    res.send("Done");
+});
 app.listen(6069);
