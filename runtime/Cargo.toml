@@ -76,9 +76,9 @@ git = 'https://github.com/paritytech/substrate.git'
 rev = 'd6c33e7ec313f9bd5e319dc0a5a3ace5543f9617'
 version = '3.0.0'
 
-[dependencies.pallet-template]
+[dependencies.pallet-carpooling]
 default-features = false
-path = '../pallets/template'
+path = '../pallets/carpooling'
 version = '3.0.0'
 
 [dependencies.pallet-timestamp]
@@ -167,7 +167,7 @@ version = '3.0.0'
 
 [package]
 authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
-edition = '2018'
+edition = '2021'
 homepage = 'https://substrate.dev'
 license = 'Unlicense'
 name = 'node-template-runtime'
@@ -180,6 +180,10 @@ git = 'https://github.com/paritytech/substrate.git'
 rev = 'd6c33e7ec313f9bd5e319dc0a5a3ace5543f9617'
 version = '4.0.0'
 
+# local dependencies
+# pallet-carpooling = { default-features = false, path = '../pallets/carpooling', version = '3.0.0' }
+
+
 [features]
 default = ['std']
 runtime-benchmarks = [
@@ -189,7 +193,7 @@ runtime-benchmarks = [
     'frame-system/runtime-benchmarks',
     'hex-literal',
     'pallet-balances/runtime-benchmarks',
-    'pallet-template/runtime-benchmarks',
+    'pallet-carpooling/runtime-benchmarks',
     'pallet-timestamp/runtime-benchmarks',
     'sp-runtime/runtime-benchmarks',
 ]
@@ -204,7 +208,7 @@ std = [
     'pallet-grandpa/std',
     'pallet-randomness-collective-flip/std',
     'pallet-sudo/std',
-    'pallet-template/std',
+    'pallet-carpooling/std',
     'pallet-timestamp/std',
     'pallet-transaction-payment-rpc-runtime-api/std',
     'pallet-transaction-payment/std',
