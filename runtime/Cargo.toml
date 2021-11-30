@@ -167,7 +167,7 @@ version = '3.0.0'
 
 [package]
 authors = ['Substrate DevHub <https://github.com/substrate-developer-hub>']
-edition = '2018'
+edition = '2021'
 homepage = 'https://substrate.dev'
 license = 'Unlicense'
 name = 'node-template-runtime'
