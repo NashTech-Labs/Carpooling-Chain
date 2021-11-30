@@ -48,7 +48,15 @@ nodejs -v
 ### Install express js
 
 ```
-npm install express
+npm install
+```
+### Install yarn
+```
+npm install -g yarn
+```
+### Install Polkadot js API
+```
+yarn add @polkadot/api
 ```
 ## Building
 
@@ -69,3 +77,10 @@ cargo build --release
 cd app/src/
 node index.js
 ```
+Now open this link to add a new customer:
+
+http://localhost:6069/add-customer
+
+Now you can check whether the new customer has been added or not by going on the polkadot.js portal.
+
+https://polkadot.js.org/apps/#/chainstate
