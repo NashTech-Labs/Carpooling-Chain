@@ -4,7 +4,7 @@ Carpooling Chain is a decentralized blockchain solution built with the objective
 
 ## Setting up your environment
 
-### Rustup.rs
+### Installation of Rust
 
 Building this project requires [rustup](https://rustup.rs/), version 1.8.0 or more recent.
 If you have an older version, run `rustup self update`.
@@ -24,13 +24,48 @@ To skip that step, run instead:
 ```
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain none
 ```
+### Installation of Node and npm
 
+To install node js we need following commands:
+
+```
+sudo apt update
+```
+Install Node.js from the repositories:
+
+```
+sudo apt install nodejs
+```
+Install npm:
+```
+sudo apt install npm
+```
+To check which version of Node.js you have installed after these initial steps, type:
+
+```
+nodejs -v
+```
+### Install express js
+
+```
+npm install express
+```
 ## Building
-
-### Normal Build
 
 ```
 git clone https://github.com/knoldus/Carpooling-Chain
 cd Carpooling-Chain
-cargo build
+cargo build --release
+
+```
+## To start local substrate node
+
+```
+./target/release/node-template --dev --tmp
+```
+## Run the App
+
+```
+cd app/src/
+node index.js
 ```
