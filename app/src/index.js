@@ -7,7 +7,7 @@ var crypto = require('crypto');
 
 const app = express();
 
-app.get('/add-cab', (req, res) =>{
+app.get('/add-customer', (req, res) =>{
 
     // digestMessage function converts a string to H256 hash string.
     //
@@ -29,7 +29,7 @@ app.get('/add-cab', (req, res) =>{
         }
 
       }
-    // main functions calls the addNewCab dispatch function to add a new cab.
+    // main functions calls the addNewCustomer dispatch function to add a new customer.
     async function main(){
 
 
@@ -84,7 +84,7 @@ app.get('/update-cab-location', (req, res) =>{
     main().then(() => console.log('completed'));
     res.send("Done");
 });
-app.get('/book', (req, res) =>{
+app.get('/book-ride', (req, res) =>{
     // main functions calls the bookRide dispatch function to book a cab.
     async function main(){
         // Construct
@@ -137,7 +137,7 @@ app.get('/make-cab-idle', (req, res) =>{
     main().then(() => console.log('completed'));
     res.send("Done");
 });
-app.get('/addcab', (req, res) =>{
+app.get('/add-cab', (req, res) =>{
     // digestMessage function converts a string to H256 hash string.
     //
     // # Arguments
@@ -176,7 +176,7 @@ app.get('/addcab', (req, res) =>{
         try{
             let namePromise = digestMessage("Ayushi Dwivedi");
             namePromise.then((car_no)=>{
-                const addCab = api.tx.carpooling.addNewCab(15,{id: 15, car_no: car_no , location: [20,40], price: 30 , destination:[40,20]});
+                const addCab = api.tx.carpooling.addNewCab(30,{id: 30, car_no: car_no , location: [20,40], price: 30 , destination:[40,20]});
                 addCab.signAndSend(alice);
                 console.log(`The customer was successfully added`);
             });
@@ -190,7 +190,7 @@ app.get('/addcab', (req, res) =>{
     res.send("Done");
 });
 
-app.get('/updatecust', (req, res) =>{
+app.get('/update-customer', (req, res) =>{
 
     // main functions calls the updatecustlocation dispatch function to update customer location.
     async function main(){
